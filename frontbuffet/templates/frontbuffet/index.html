@@ -1,0 +1,9 @@
+{% if all_offers_list %}
+<ul>
+    {% for offer in all_offers_list %}
+    <li><a href="/buffet/{{ offer.id }}/">{{ offer.title }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No offers are available.</p>
+{% endif %}
