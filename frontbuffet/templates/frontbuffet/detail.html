@@ -4,4 +4,6 @@
 <img src="{{ offer.image }}" alt="">
 <h1>{{ offer.title }} - {{ offer.price }}</h1>
 
+<a href="{% url 'add_to_cart' offer.id %}"><button>Add to cart</button></a>
+
 {% endblock content %}
