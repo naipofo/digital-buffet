@@ -1,3 +1,6 @@
+{% extends 'main.html' %}
+{% block content %}
+
 {% if all_offers_list %}
 <ul>
     {% for offer in all_offers_list %}
@@ -7,3 +10,5 @@
 {% else %}
 <p>No offers are available.</p>
 {% endif %}
+
+{% endblock content %}
