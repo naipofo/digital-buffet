@@ -90,6 +90,11 @@ def receipt(request):
         entry.save()
 
     request.session["cart"] = {}
+
+    orders = request.session.get("orders", [])
+    orders += [order.id]
+    request.session["orders"] = orders
+
     return render(
         request,
         "frontbuffet/receipt.html",
@@ -102,7 +107,24 @@ def empty_cart(request):
 
 
 def orders(request):
-    return render(request, "frontbuffet/orders.html", {})
+    orders = request.session.get("orders", [])
+    return render(
+        request,
+        "frontbuffet/orders.html",
+        {"orders": PlacedOrder.objects.filter(id__in=orders)},
+    )
+
+
+def order(request, id, code):
+    order = PlacedOrder.objects.get(pk=id)
+    if order.order_code != str(code):
+        return Http404("Order not found")
+
+    return render(
+        request,
+        "frontbuffet/order.html",
+        {"order": order},
+    )
 
 
 def display_cart(request) -> [int, list[dict]]:

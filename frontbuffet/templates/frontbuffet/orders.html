@@ -2,5 +2,18 @@
 {% block content %}
 
 <h2>orders</h2>
+<table class="table">
+    <tbody>
+        {% for item in orders %}
+        <tr>
+            <th scope="row">{{ item }}</th>
+            <td>{{ item.order_code }}</td>
+        </tr>
+        <tr>
+            <th scope="row" rowspan="2"><a href="{% url 'order' item.id item.order_code %}">details</a></th>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
 {% endblock content %}

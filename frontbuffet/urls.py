@@ -11,4 +11,5 @@ urlpatterns = [
     path("receipt", views.receipt, name="receipt"),
     path("empty_cart", views.empty_cart, name="empty_cart"),
     path("orders", views.orders, name="orders"),
+    path("order/<int:id>/<int:code>", views.order, name="order"),
 ]
