@@ -2,5 +2,19 @@
 {% block content %}
 
 <h2>receipt</h2>
+<table class="table">
+    <tbody>
+        {% for item in cart %}
+        <tr>
+            <th scope="row">{{ item.product.title }}</th>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.total_price | floatformat:2 }}$</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p>Order was accepted. Your pickup code is <strong>{{ code }}</strong>!</p>
+<a href="{% url 'orders' %}"><button>Orders</button></a>
 
 {% endblock content %}

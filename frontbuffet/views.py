@@ -1,7 +1,9 @@
+import random
+import string
 from django.http import Http404
 from django.shortcuts import redirect, render
 
-from .models import FoodOffer
+from .models import FoodOffer, OrderEntry, PlacedOrder
 
 
 def index(request):
@@ -42,24 +44,9 @@ def cart(request):
     if len(cart) == 0:
         return redirect("empty_cart")
 
-    products = FoodOffer.objects.filter(id__in=cart.keys())
+    cart = display_cart(request)
 
-    total_price = 0
-    display_cart = []
-
-    for item in cart.items():
-        product = products.get(id=item[0])
-        price = item[1]["quantity"] * product.price
-        total_price += price
-        display_cart += [
-            {
-                "product": product,
-                "quantity": item[1]["quantity"],
-                "total_price": price / 100,
-            }
-        ]
-
-    context = {"cart": display_cart, "total": total_price / 100}
+    context = {"cart": cart[1], "total": cart[0] / 100}
     return render(request, "frontbuffet/cart.html", context)
 
 
@@ -86,9 +73,55 @@ def checkout(request):
 
 
 def receipt(request):
-    request.session.set("cart", {})
-    return render(request, "frontbuffet/receipt.html", {})
+    cart = request.session["cart"]
+
+    order_code = "".join(random.choice(string.digits) for _ in range(6))
+    order = PlacedOrder(order_code=order_code)
+    order.save()
+
+    formated_cart = display_cart(request)
+
+    for item in cart.items():
+        entry = OrderEntry(
+            order=order,
+            product=FoodOffer.objects.get(pk=item[0]),
+            amount=item[1]["quantity"],
+        )
+        entry.save()
+
+    request.session["cart"] = {}
+    return render(
+        request,
+        "frontbuffet/receipt.html",
+        {"cart": formated_cart[1], "total": formated_cart[0] / 100, "code": order_code},
+    )
 
 
 def empty_cart(request):
     return render(request, "frontbuffet/empty_cart.html", {})
+
+
+def orders(request):
+    return render(request, "frontbuffet/orders.html", {})
+
+
+def display_cart(request) -> [int, list[dict]]:
+    cart = request.session["cart"]
+    products = FoodOffer.objects.filter(id__in=cart.keys())
+    total_price = 0
+    display_cart = []
+    orders = []
+
+    for item in cart.items():
+        product = products.get(id=item[0])
+        price = item[1]["quantity"] * product.price
+        total_price += price
+        display_cart += [
+            {
+                "product": product,
+                "quantity": item[1]["quantity"],
+                "total_price": price / 100,
+            }
+        ]
+
+    return (total_price, display_cart)
