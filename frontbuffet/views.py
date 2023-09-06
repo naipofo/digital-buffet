@@ -37,7 +37,10 @@ def add_to_cart(request, offer_id):
 
 
 def cart(request):
-    cart = request.session["cart"]
+    cart = request.session.get("cart", {})
+
+    if len(cart) == 0:
+        return redirect("empty_cart")
 
     products = FoodOffer.objects.filter(id__in=cart.keys())
 
@@ -83,4 +86,9 @@ def checkout(request):
 
 
 def receipt(request):
+    request.session.set("cart", {})
     return render(request, "frontbuffet/receipt.html", {})
+
+
+def empty_cart(request):
+    return render(request, "frontbuffet/empty_cart.html", {})
