@@ -3,8 +3,8 @@
 
 <h2>checkout</h2>
 
+{% include "../includes/receipt_list.html" with items=cart %}
 <h4>Total: {{ total | floatformat:2 }}$</h4>
-<h6>{{ order_string }}</h6>
 
 <form action="{% url 'receipt' %}">
     <label>Blik code: <input type="number" max="999999"></label>

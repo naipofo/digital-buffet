@@ -52,23 +52,12 @@ def cart(request):
 
 def checkout(request):
     cart = request.session["cart"]
-    products = FoodOffer.objects.filter(id__in=cart.keys())
-    total_price = 0
-    orders = []
-
-    for item in cart.items():
-        product = products.get(id=item[0])
-        quantity = item[1]["quantity"]
-        total_price += quantity * product.price
-        if item[1]["quantity"] > 1:
-            orders += [f"{quantity}x {product.title}"]
-        else:
-            orders += [product.title]
+    formated_cart = display_cart(request)
 
     return render(
         request,
         "frontbuffet/checkout.html",
-        {"total": total_price / 100, "order_string": ",".join(orders)},
+        {"cart": formated_cart[1], "total": formated_cart[0] / 100},
     )
 
 

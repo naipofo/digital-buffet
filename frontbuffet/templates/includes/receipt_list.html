@@ -1,0 +1,11 @@
+<table class="table">
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <th scope="row">{{ item.product.title }}</th>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.total_price | floatformat:2 }}$</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
