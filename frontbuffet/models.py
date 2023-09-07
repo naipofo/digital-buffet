@@ -21,3 +21,7 @@ class OrderEntry(models.Model):
 
     def __str__(self):
         return self.product.title
+
+    @property
+    def value(self):
+        return self.product.price * self.amount / 100

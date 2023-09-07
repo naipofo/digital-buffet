@@ -73,6 +73,7 @@ def receipt(request):
 
     orders = request.session.get("orders", [])
     orders += [order.id]
+    request.session["orders"] = orders
 
     clear_shopping_cart(request.session)
 
@@ -104,5 +105,5 @@ def order(request, id, code):
     return render(
         request,
         "frontbuffet/order.html",
-        {"order": order},
+        {"order": order, "items": order.orderentry_set.all()},
     )
