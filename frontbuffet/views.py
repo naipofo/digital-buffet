@@ -3,6 +3,12 @@ import string
 from django.http import Http404
 from django.shortcuts import redirect, render
 
+from frontbuffet.shopping_cart import (
+    add_to_shopping_cart,
+    clear_shopping_cart,
+    get_shopping_cart,
+)
+
 from .models import FoodOffer, OrderEntry, PlacedOrder
 
 
@@ -26,68 +32,54 @@ def detail(request, offer_id):
 
 
 def add_to_cart(request, offer_id):
-    cart = request.session.get("cart", {})
-
-    if offer_id not in cart:
-        cart[offer_id] = {"quantity": 1}
-    else:
-        cart[offer_id]["quantity"] += 1
-
-    request.session["cart"] = cart
-
+    add_to_shopping_cart(request.session, offer_id, 1)
     return redirect("cart")
 
 
 def cart(request):
-    cart = request.session.get("cart", {})
+    cart = get_shopping_cart(request.session)
 
-    if len(cart) == 0:
+    if len(cart.items) == 0:
         return redirect("empty_cart")
 
-    cart = display_cart(request)
-
-    context = {"cart": cart[1], "total": cart[0] / 100}
+    context = {"cart": cart}
     return render(request, "frontbuffet/cart.html", context)
 
 
 def checkout(request):
-    cart = request.session["cart"]
-    formated_cart = display_cart(request)
+    cart = get_shopping_cart(request.session)
 
     return render(
         request,
         "frontbuffet/checkout.html",
-        {"cart": formated_cart[1], "total": formated_cart[0] / 100},
+        {"cart": cart},
     )
 
 
 def receipt(request):
-    cart = request.session["cart"]
+    cart = get_shopping_cart(request.session)
 
     order_code = "".join(random.choice(string.digits) for _ in range(6))
     order = PlacedOrder(order_code=order_code)
     order.save()
 
-    formated_cart = display_cart(request)
-
-    for item in cart.items():
+    for item in cart.items:
         entry = OrderEntry(
             order=order,
-            product=FoodOffer.objects.get(pk=item[0]),
-            amount=item[1]["quantity"],
+            product=FoodOffer.objects.get(pk=item.product_id),
+            amount=item.amount,
         )
         entry.save()
 
-    request.session["cart"] = {}
-
     orders = request.session.get("orders", [])
     orders += [order.id]
-    request.session["orders"] = orders
+
+    clear_shopping_cart(request.session)
 
     return render(
         request,
         "frontbuffet/receipt.html",
-        {"cart": formated_cart[1], "total": formated_cart[0] / 100, "code": order_code},
+        {"cart": cart, "code": order_code},
     )
 
 
@@ -114,25 +106,3 @@ def order(request, id, code):
         "frontbuffet/order.html",
         {"order": order},
     )
-
-
-def display_cart(request) -> [int, list[dict]]:
-    cart = request.session["cart"]
-    products = FoodOffer.objects.filter(id__in=cart.keys())
-    total_price = 0
-    display_cart = []
-    orders = []
-
-    for item in cart.items():
-        product = products.get(id=item[0])
-        price = item[1]["quantity"] * product.price
-        total_price += price
-        display_cart += [
-            {
-                "product": product,
-                "quantity": item[1]["quantity"],
-                "total_price": price / 100,
-            }
-        ]
-
-    return (total_price, display_cart)

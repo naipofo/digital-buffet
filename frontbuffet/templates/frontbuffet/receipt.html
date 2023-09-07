@@ -2,7 +2,7 @@
 {% block content %}
 
 <h2>receipt</h2>
-{% include "../includes/receipt_list.html" with items=cart %}
+{% include "../includes/receipt_list.html" with items=cart.items %}
 
 <p>Order was accepted. Your pickup code is <strong>{{ code }}</strong>!</p>
 <a href="{% url 'orders' %}"><button>Orders</button></a>

@@ -13,18 +13,18 @@
         </tr>
     </thead>
     <tbody>
-        {% for item in cart %}
+        {% for item in cart.items %}
         <tr>
             <td><img src="{{ item.product.image }}" alt="twbs" width="32" height="32" class="rounded-circle"></td>
             <th scope="row">{{ item.product.title }}</th>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.total_price | floatformat:2 }}$</td>
+            <td>{{ item.amount }}</td>
+            <td>{{ item.value | floatformat:2 }}$</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
 
-<h4>Total: {{ total | floatformat:2 }}$</h4>
+<h4>Total: {{ cart.value | floatformat:2 }}$</h4>
 <a href="{% url 'checkout' %}" class="active px-2 link-body-emphasis">Checkout</a>
 
 
