@@ -99,7 +99,8 @@ def orders(request):
 
 def order(request, id, code):
     order = PlacedOrder.objects.get(pk=id)
-    if order.order_code != str(code):
+    print(order.order_code)
+    if order.order_code != code:
         return Http404("Order not found")
 
     return render(
