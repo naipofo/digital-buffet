@@ -1,7 +1,5 @@
 import json
 
-from attr import dataclass
-
 from frontbuffet.models import FoodOffer
 from pydantic import BaseModel
 
