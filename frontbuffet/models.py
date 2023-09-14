@@ -1,17 +1,13 @@
 from django.db import models
 
+class FoodTag(models.Model):
+    name = models.CharField(max_length=200)
 
 class FoodOffer(models.Model):
     title = models.CharField(max_length=200)
     image = models.URLField()
     price = models.IntegerField()
-
-class FoodTag(models.Model):
-    name = models.CharField(max_length=200)
-
-class OfferTag(models.Model):
-    offer = models.ForeignKey(FoodOffer, on_delete=models.CASCADE)
-    tag = models.ForeignKey(FoodTag, on_delete=models.CASCADE)
+    tags = models.ManyToManyField(FoodTag)
 
 class PlacedOrder(models.Model):
     order_code = models.CharField(max_length=4)
