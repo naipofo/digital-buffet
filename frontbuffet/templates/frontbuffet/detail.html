@@ -3,6 +3,11 @@
 
 <img src="{{ offer.image }}" alt="">
 <h1>{{ offer.title }} - {{ offer.price }}</h1>
+<div>
+    {% for tag in tag_list %}
+        <span class="tag">{{ tag }}</span>
+    {% endfor %}
+</div>
 
 <a href="{% url 'add_to_cart' offer.id %}"><button>Add to cart</button></a>
 

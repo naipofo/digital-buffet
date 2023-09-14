@@ -28,7 +28,7 @@ def detail(request, offer_id):
         offer = FoodOffer.objects.get(pk=offer_id)
     except FoodOffer.DoesNotExist:
         raise Http404("Offer does not exist")
-    return render(request, "frontbuffet/detail.html", {"offer": offer})
+    return render(request, "frontbuffet/detail.html", {"offer": offer, "tag_list": offer.tags.all()})
 
 
 def add_to_cart(request, offer_id):
